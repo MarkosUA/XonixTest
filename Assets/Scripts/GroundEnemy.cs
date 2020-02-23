@@ -1,18 +1,23 @@
 ﻿
 public class GroundEnemy
 {
-    private Position _position;
+    //private Position _position;
     private Direction _direction;
+    private PlayerController _playerController;
 
-    public GroundEnemy(Position position, Direction direction)
+    public Position Position { get; private set; }
+    //public Position NextPosition { get; private set; }
+
+    public GroundEnemy(Position position, Direction direction, PlayerController playerController)
     {
-        _position = position;
+        Position = position;
         _direction = direction;
+        _playerController = playerController;
     }
 
     public void Move(Field field)
     {
-        var nextPosition = _position;
+        var nextPosition = Position;
         switch (_direction)
         {
             case Direction.TopRight:
@@ -35,47 +40,55 @@ public class GroundEnemy
 
         if (field.Grid[nextPosition.X, nextPosition.Y] == Elements.GROUND || field.Grid[nextPosition.X, nextPosition.Y] == Elements.GROUNDENEMY)
         {
-            field.Grid[_position.X, _position.Y] = Elements.GROUND;
+            field.Grid[Position.X, Position.Y] = Elements.GROUND;
             field.Grid[nextPosition.X, nextPosition.Y] = Elements.GROUNDENEMY;
-            _position = nextPosition;
+            Position = nextPosition;
         }
         else
         {
-            Rebound(nextPosition, field);
+            if (field.Grid[nextPosition.X, nextPosition.Y] == Elements.TRACK)
+                _playerController.Damage(field);
+            else
+                Rebound(nextPosition, field);
         }
+    }
+
+    public void Die(Field field)
+    {
+        field.Grid[Position.X, Position.Y] = Elements.WATER;
     }
 
     private void Rebound(Position nextPosition, Field field)
     {
-        if (_direction == Direction.TopRight && field.Grid[_position.X, nextPosition.Y] == Elements.WATER)
+        if (_direction == Direction.TopRight && field.Grid[Position.X, nextPosition.Y] == Elements.WATER)
             _direction = Direction.BottomRight;
         else
         {
-            if (_direction == Direction.TopRight && field.Grid[nextPosition.X, _position.Y] == Elements.WATER)
+            if (_direction == Direction.TopRight && field.Grid[nextPosition.X, Position.Y] == Elements.WATER)
                 _direction = Direction.TopLeft;
             else
             {
-                if (_direction == Direction.BottomRight && field.Grid[nextPosition.X, _position.Y] == Elements.WATER)
+                if (_direction == Direction.BottomRight && field.Grid[nextPosition.X, Position.Y] == Elements.WATER)
                     _direction = Direction.BottomLeft;
                 else
                 {
-                    if (_direction == Direction.BottomRight && field.Grid[_position.X, nextPosition.Y] == Elements.WATER)
+                    if (_direction == Direction.BottomRight && field.Grid[Position.X, nextPosition.Y] == Elements.WATER)
                         _direction = Direction.TopRight;
                     else
                     {
-                        if (_direction == Direction.BottomLeft && field.Grid[_position.X, nextPosition.Y] == Elements.WATER)
+                        if (_direction == Direction.BottomLeft && field.Grid[Position.X, nextPosition.Y] == Elements.WATER)
                             _direction = Direction.TopLeft;
                         else
                         {
-                            if (_direction == Direction.BottomLeft && field.Grid[nextPosition.X, _position.Y] == Elements.WATER)
+                            if (_direction == Direction.BottomLeft && field.Grid[nextPosition.X, Position.Y] == Elements.WATER)
                                 _direction = Direction.BottomRight;
                             else
                             {
-                                if (_direction == Direction.TopLeft && field.Grid[nextPosition.X, _position.Y] == Elements.WATER)
+                                if (_direction == Direction.TopLeft && field.Grid[nextPosition.X, Position.Y] == Elements.WATER)
                                     _direction = Direction.TopRight;
                                 else
                                 {
-                                    if (_direction == Direction.TopLeft && field.Grid[_position.X, nextPosition.Y] == Elements.WATER)
+                                    if (_direction == Direction.TopLeft && field.Grid[Position.X, nextPosition.Y] == Elements.WATER)
                                         _direction = Direction.BottomLeft;
                                 }
                             }

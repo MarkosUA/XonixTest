@@ -10,4 +10,5 @@ public class Data : ScriptableObject
     public int WidthOfTheWater;
     public int WidthOfTheField;
     public int HeightOfTheField;
+    public int TimerValue;
 }

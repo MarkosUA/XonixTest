@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d06ffaeaa2abb5645bf79774a45aaf29, type: 3}
   m_Name: Data
   m_EditorClassIdentifier: 
-  Hp: -177
+  Hp: -220
   Lvl: 1
   CountOfTheGroundEnemies: 4
   CountOfTheWaterEnemies: 2
   WidthOfTheWater: 2
   WidthOfTheField: 40
   HeightOfTheField: 60
+  TimerValue: 6

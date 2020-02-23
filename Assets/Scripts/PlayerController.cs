@@ -5,16 +5,32 @@ using UnityEngine;
 public class PlayerController
 {
     private Position _position;
+    private Position _returnPosition;
     private int _realElement;
     private PlayerModel _playerModel;
+    private Data _data;
+    private FieldController _fieldController;
 
     private List<Position> _trackPositions;
 
-    public PlayerController(Position position, PlayerModel playerModel)
+    public PlayerController(Position position, PlayerModel playerModel, Data data, FieldController fieldController)
     {
         _position = position;
         _playerModel = playerModel;
         _trackPositions = new List<Position>();
+        _data = data;
+        _fieldController = fieldController;
+    }
+
+    public void Damage(Field field)
+    {
+        _data.Hp--;
+        field.Grid[_position.X, _position.Y] = Elements.GROUND;
+        field.Grid[_returnPosition.X, _returnPosition.Y] = Elements.PLAYER;
+        _realElement = Elements.WATER;
+        ClearTrack(field, _trackPositions);
+        _trackPositions.Clear();
+        _position = _returnPosition;
     }
 
     public void Move(Field field)
@@ -68,7 +84,10 @@ public class PlayerController
 
                     _position = nextPosition;
 
-                    ZoneSelection(zone1, zone2, zone3, zone4, _trackPositions, field);
+                    var zone = ZoneSelection(zone1, zone2, zone3, zone4);
+                    PaintingZone(field, zone, _trackPositions);
+                    _fieldController.DeletedEnemies(zone);
+                    _trackPositions.Clear();
                 }
                 else
                 {
@@ -77,6 +96,7 @@ public class PlayerController
                         field.Grid[_position.X, _position.Y] = Elements.WATER;
                         field.Grid[nextPosition.X, nextPosition.Y] = Elements.PLAYER;
                         _realElement = Elements.GROUND;
+                        _returnPosition = _position;
                         _position = nextPosition;
                     }
                     else
@@ -93,7 +113,20 @@ public class PlayerController
                         {
                             if (field.Grid[nextPosition.X, nextPosition.Y] == Elements.GROUNDENEMY || field.Grid[nextPosition.X, nextPosition.Y] == Elements.WATERENEMY)
                             {
-
+                                _data.Hp--;
+                            }
+                            else
+                            {
+                                if (field.Grid[nextPosition.X, nextPosition.Y] == Elements.TRACK)
+                                {
+                                    _data.Hp--;
+                                    field.Grid[_position.X, _position.Y] = Elements.GROUND;
+                                    field.Grid[_returnPosition.X, _returnPosition.Y] = Elements.PLAYER;
+                                    _realElement = Elements.WATER;
+                                    ClearTrack(field, _trackPositions);
+                                    _trackPositions.Clear();
+                                    _position = _returnPosition;
+                                }
                             }
                         }
                     }
@@ -106,7 +139,7 @@ public class PlayerController
         }
     }
 
-    private void CountingZones(Field field, Position position, List<Position> list)
+    private void CountingZones(Field field, Position position, List<Position> list) //TODO: Fix alloc.
     {
         if (field.Grid[position.X, position.Y] != Elements.GROUND)
             return;
@@ -121,22 +154,26 @@ public class PlayerController
         CountingZones(field, new Position(position.X, position.Y - 1), list);
     }
 
-    private void ZoneSelection(List<Position> zone1, List<Position> zone2, List<Position> zone3, List<Position> zone4, List<Position> track, Field field)
+    private List<Position> ZoneSelection(List<Position> zone1, List<Position> zone2, List<Position> zone3, List<Position> zone4)
     {
         if (zone1.Count > 0 && zone1.Count <= zone2.Count || zone1.Count > 0 && zone1.Count <= zone3.Count || zone1.Count > 0 && zone1.Count <= zone4.Count)
-            PaintingZone(field, zone1, track);
+            return zone1;
         else
         {
             if (zone2.Count > 0 && zone2.Count <= zone1.Count || zone2.Count > 0 && zone2.Count <= zone3.Count || zone2.Count > 0 && zone2.Count <= zone4.Count)
-                PaintingZone(field, zone2, track);
+                return zone2;
             else
             {
                 if (zone3.Count > 0 && zone3.Count <= zone1.Count || zone3.Count > 0 && zone3.Count <= zone2.Count || zone3.Count > 0 && zone3.Count <= zone4.Count)
-                    PaintingZone(field, zone3, track);
+                    return zone3;
                 else
                 {
                     if (zone4.Count > 0 && zone4.Count <= zone1.Count || zone4.Count > 0 && zone4.Count <= zone2.Count || zone4.Count > 0 && zone4.Count <= zone3.Count)
-                        PaintingZone(field, zone4, track);
+                        return zone4;
+                    else
+                    {
+                        return null;
+                    }
                 }
             }
         }
@@ -152,6 +189,14 @@ public class PlayerController
         for (int i = 0; i < zone.Count; i++)
         {
             field.Grid[zone[i].X, zone[i].Y] = Elements.WATER;
+        }
+    }
+
+    private void ClearTrack(Field field, List<Position> track)
+    {
+        for (int i = 0; i < track.Count; i++)
+        {
+            field.Grid[track[i].X, track[i].Y] = Elements.GROUND;
         }
     }
 }

@@ -53,7 +53,7 @@ public class FieldController
     private void AddGroundEnemy(Position position)
     {
         _field.Grid[position.X, position.Y] = Elements.GROUNDENEMY;
-        var groundEnemy = new GroundEnemy(position, SelectDirection());
+        var groundEnemy = new GroundEnemy(position, SelectDirection(), _playerController);
         _groundEnemies.Add(groundEnemy);
     }
 
@@ -68,7 +68,7 @@ public class FieldController
     {
         _field.Grid[position.X, position.Y] = Elements.PLAYER;
         _playerModel = new PlayerModel(Direction.NoMove);
-        _playerController = new PlayerController(position, _playerModel);
+        _playerController = new PlayerController(position, _playerModel, _data, this);
         _playerView.PlayerModel = _playerModel;
     }
 
@@ -105,6 +105,23 @@ public class FieldController
                 return maxValue - 2;
             default:
                 return 1;
+        }
+    }
+
+    public void DeletedEnemies(List<Position> positions)
+    {
+        Debug.Log("In");
+        for (int i = 0; i < positions.Count; i++)
+        {
+            for (int j = 0; j < _groundEnemies.Count; j++)
+            {
+                if (positions[i].X == _groundEnemies[j].Position.X || positions[i].Y == _groundEnemies[j].Position.Y)
+                {
+                    Debug.Log("Must");
+                    _groundEnemies[j].Die(_field);
+                    _groundEnemies.Remove(_groundEnemies[j]);
+                }
+            }
         }
     }
 }

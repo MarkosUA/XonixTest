@@ -5,7 +5,7 @@ public class FieldView : MonoBehaviour
     private FieldController _fieldController;
     private Field _field;
 
-    private float _timer = 6f;
+    private float _timer;
 
     private ElementView[,] _elementViews;
     [SerializeField]
@@ -21,16 +21,18 @@ public class FieldView : MonoBehaviour
         _elementViews = new ElementView[_field.Width, _field.Height];
         _fieldController = new FieldController(_field, _playerView, _data);
 
+        _timer = _data.TimerValue;
+
         FieldCreation();
     }
 
     private void Update()
     {
-        if( _timer <= 0)
+        if (_timer <= 0)
         {
             _fieldController.UpdateField();
             UpdateFieldView();
-            _timer = 6f;
+            _timer = _data.TimerValue;
         }
         else
         {
