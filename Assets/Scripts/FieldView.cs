@@ -14,12 +14,16 @@ public class FieldView : MonoBehaviour
     private PlayerView _playerView;
     [SerializeField]
     private Data _data;
+    [SerializeField]
+    private CameraController _cameraController;
 
     private void Awake()
     {
         _field = new Field(width: _data.WidthOfTheField, height: _data.HeightOfTheField);
         _elementViews = new ElementView[_field.Width, _field.Height];
         _fieldController = new FieldController(_field, _playerView, _data);
+
+        _cameraController.CenterCamera(_field);
 
         _timer = _data.TimerValue;
 

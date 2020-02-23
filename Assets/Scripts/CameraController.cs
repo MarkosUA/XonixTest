@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class CameraController : MonoBehaviour
 {
@@ -8,6 +7,6 @@ public class CameraController : MonoBehaviour
 
     public void CenterCamera(Field field)
     {
-        //_camera = new Vector2(field.Width / 2, field.Height / 2);
+        _camera.position = new Vector2(field.Width / 2, field.Height / 2);
     }
 }
