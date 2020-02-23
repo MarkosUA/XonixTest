@@ -11,4 +11,5 @@ public class Data : ScriptableObject
     public int WidthOfTheField;
     public int HeightOfTheField;
     public int TimerValue;
+    public float BestSize;
 }

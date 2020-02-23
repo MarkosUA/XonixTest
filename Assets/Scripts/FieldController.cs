@@ -115,7 +115,7 @@ public class FieldController
         {
             for (int j = 0; j < _groundEnemies.Count; j++)
             {
-                if (positions[i].X == _groundEnemies[j].Position.X || positions[i].Y == _groundEnemies[j].Position.Y)
+                if (positions[i].X == _groundEnemies[j].Position.X && positions[i].Y == _groundEnemies[j].Position.Y)
                 {
                     Debug.Log("Must");
                     _groundEnemies[j].Die(_field);

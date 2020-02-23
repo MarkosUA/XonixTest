@@ -19,6 +19,11 @@ public class FieldView : MonoBehaviour
 
     private void Awake()
     {
+        _data.WidthOfTheField = Screen.width / 25;
+        _data.HeightOfTheField = Screen.height / 25;
+
+        Coef();
+
         _field = new Field(width: _data.WidthOfTheField, height: _data.HeightOfTheField);
         _elementViews = new ElementView[_field.Width, _field.Height];
         _fieldController = new FieldController(_field, _playerView, _data);
@@ -30,7 +35,7 @@ public class FieldView : MonoBehaviour
         FieldCreation();
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         if (_timer <= 0)
         {
@@ -75,5 +80,12 @@ public class FieldView : MonoBehaviour
                 }
             }
         }
+    }
+
+    private void Coef()
+    {
+        var x = 1080 / _data.BestSize;
+        var currentSize = Screen.width / x;
+        _cameraController.SizeOfTheCamera(currentSize);
     }
 }

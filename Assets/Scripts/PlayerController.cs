@@ -141,7 +141,7 @@ public class PlayerController
 
     private void CountingZones(Field field, Position position, List<Position> list) //TODO: Fix alloc.
     {
-        if (field.Grid[position.X, position.Y] != Elements.GROUND)
+        if (field.Grid[position.X, position.Y] != Elements.GROUND && field.Grid[position.X, position.Y] != Elements.GROUNDENEMY)
             return;
         if (list.Contains(position))
             return;
