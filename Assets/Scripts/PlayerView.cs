@@ -7,8 +7,6 @@ public class PlayerView : MonoBehaviour
     private Vector3 _lp;
     private float _dragDistance = Screen.height * 20 / 100;
 
-    private List<Vector3> _touchPositions = new List<Vector3>();
-
     [SerializeField]
     private Data _data;
 
@@ -67,15 +65,14 @@ public class PlayerView : MonoBehaviour
     {
         foreach (Touch touch in Input.touches)
         {
-            if (touch.phase == TouchPhase.Moved)
+            if (touch.phase == TouchPhase.Began)
             {
-                _touchPositions.Add(touch.position);
+                _fp = touch.position;
+                _lp = touch.position;
             }
-
             if (touch.phase == TouchPhase.Ended)
             {
-                _fp = _touchPositions[0];
-                _lp = _touchPositions[_touchPositions.Count - 1];
+                _lp = touch.position;
 
                 if (Mathf.Abs(_lp.x - _fp.x) > _dragDistance || Mathf.Abs(_lp.y - _fp.y) > _dragDistance)
                 {
@@ -125,5 +122,4 @@ public class PlayerView : MonoBehaviour
             }
         }
     }
-
 }

@@ -36,8 +36,8 @@ public class FieldView : MonoBehaviour
 
     private void Awake()
     {
-        _data.WidthOfTheField = Screen.width / 25;
-        _data.HeightOfTheField = Screen.height / 25;
+        _data.WidthOfTheField = Screen.width / _data.SizeCoef;
+        _data.HeightOfTheField = Screen.height / _data.SizeCoef;
 
         Coef();
 
@@ -128,18 +128,8 @@ public class FieldView : MonoBehaviour
 
     private void Coef()
     {
-        if (Screen.width > Screen.height)
-        {
-            var x = 1080f / _data.BestLandscapeSize;
-            var currentSize = Screen.height / x;
-            _cameraController.SizeOfTheCamera(currentSize);
-        }
-        else
-        {
-            var x = 1080f / _data.BestPotraitSize;
-            var currentSize = Screen.width / x;
-            _cameraController.SizeOfTheCamera(currentSize);
-        }
+        var currentSize = Screen.height / 2 / _data.SizeCoef;
+        _cameraController.SizeOfTheCamera(currentSize);
     }
 
     private void Lose()

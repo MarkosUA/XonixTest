@@ -11,8 +11,7 @@ public class Data : ScriptableObject
     public int WidthOfTheWater;
     public int WidthOfTheField;
     public int HeightOfTheField;
+    public int SizeCoef;
     public float TimerValue;
-    public float BestLandscapeSize;
-    public float BestPotraitSize;
     public float TimeToEndLevel;
 }
