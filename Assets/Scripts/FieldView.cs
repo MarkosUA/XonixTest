@@ -17,6 +17,8 @@ public class FieldView : MonoBehaviour
     private Data _data;
     [SerializeField]
     private CameraController _cameraController;
+    [SerializeField]
+    private SliderProgress _sliderProgress;
 
     [SerializeField]
     private GameObject _panel;
@@ -68,6 +70,7 @@ public class FieldView : MonoBehaviour
                                 _fieldController.UpdateField();
                                 UpdateFieldView();
                                 _timer = _data.TimerValue;
+                                _sliderProgress.SliderChange(_fieldController.NumberOfTheRepaintedElements, _numberOfTheGround / 2);
                             }
                             else
                                 Win();
