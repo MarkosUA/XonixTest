@@ -7,7 +7,7 @@ public class CameraController : MonoBehaviour
 
     public void CenterCamera(Field field)
     {
-        _camera.transform.position = new Vector3(field.Width / 2, field.Height / 2, -50);
+        _camera.transform.position = new Vector3(field.Width / 2 - 0.5f, field.Height / 2 - 0.5f, -50);
     }
 
     public void SizeOfTheCamera(float size)

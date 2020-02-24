@@ -6,6 +6,7 @@ public class FieldView : MonoBehaviour
     private Field _field;
 
     private float _timer;
+    private int _numberOfTheGround;
 
     private ElementView[,] _elementViews;
     [SerializeField]
@@ -16,6 +17,20 @@ public class FieldView : MonoBehaviour
     private Data _data;
     [SerializeField]
     private CameraController _cameraController;
+
+    [SerializeField]
+    private GameObject _panel;
+    [SerializeField]
+    private GameObject _pauseBtn;
+    [SerializeField]
+    private GameObject _continueBtn;
+    [SerializeField]
+    private GameObject _nextLvlBtn;
+    [SerializeField]
+    private GameObject _tryAgainBtn;
+
+    public bool Pause { get; set; }
+    public float TimerToEnd { get; private set; }
 
     private void Awake()
     {
@@ -31,21 +46,46 @@ public class FieldView : MonoBehaviour
         _cameraController.CenterCamera(_field);
 
         _timer = _data.TimerValue;
+        TimerToEnd = _data.TimeToEndLevel;
 
         FieldCreation();
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
-        if (_timer <= 0)
+        if (!Pause)
         {
-            _fieldController.UpdateField();
-            UpdateFieldView();
-            _timer = _data.TimerValue;
-        }
-        else
-        {
-            _timer--;
+            if (_data.Hp > 0)
+            {
+                if (TimerToEnd >= 0)
+                {
+                    if (_timer <= 0)
+                    {
+                        if (_fieldController.GroundEnemies.Count > 0)
+                        {
+                            if (_fieldController.NumberOfTheRepaintedElements <= _numberOfTheGround - _fieldController.NumberOfTheRepaintedElements)
+                            {
+                                _fieldController.UpdateField();
+                                UpdateFieldView();
+                                _timer = _data.TimerValue;
+                            }
+                            else
+                                Win();
+                        }
+                        else
+                            Win();
+                    }
+                    else
+                    {
+                        _timer -= Time.deltaTime;
+                    }
+                    TimerToEnd -= Time.deltaTime;
+                }
+            }
+            else
+            {
+                Lose();
+            }
         }
     }
 
@@ -77,6 +117,7 @@ public class FieldView : MonoBehaviour
                     var element = _elementViews[x, y] = Instantiate(_prefab);
                     _field.Grid[x, y] = Elements.GROUND;
                     element.transform.position = new Vector3(x, y, z: 0);
+                    _numberOfTheGround++;
                 }
             }
         }
@@ -84,8 +125,37 @@ public class FieldView : MonoBehaviour
 
     private void Coef()
     {
-        var x = 1080 / _data.BestSize;
-        var currentSize = Screen.width / x;
-        _cameraController.SizeOfTheCamera(currentSize);
+        if (Screen.width > Screen.height)
+        {
+            var x = 1080f / _data.BestLandscapeSize;
+            var currentSize = Screen.height / x;
+            _cameraController.SizeOfTheCamera(currentSize);
+        }
+        else
+        {
+            var x = 1080f / _data.BestPotraitSize;
+            var currentSize = Screen.width / x;
+            _cameraController.SizeOfTheCamera(currentSize);
+        }
+    }
+
+    private void Lose()
+    {
+        Pause = true;
+        _pauseBtn.SetActive(false);
+        _panel.SetActive(true);
+        _continueBtn.SetActive(false);
+        _nextLvlBtn.SetActive(false);
+        _tryAgainBtn.SetActive(true);
+    }
+
+    private void Win()
+    {
+        Pause = true;
+        _pauseBtn.SetActive(false);
+        _panel.SetActive(true);
+        _continueBtn.SetActive(false);
+        _nextLvlBtn.SetActive(true);
+        _tryAgainBtn.SetActive(false);
     }
 }

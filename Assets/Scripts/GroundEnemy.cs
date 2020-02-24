@@ -1,12 +1,10 @@
 ﻿
 public class GroundEnemy
 {
-    //private Position _position;
     private Direction _direction;
     private PlayerController _playerController;
 
     public Position Position { get; private set; }
-    //public Position NextPosition { get; private set; }
 
     public GroundEnemy(Position position, Direction direction, PlayerController playerController)
     {

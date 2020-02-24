@@ -1,6 +1,5 @@
 ﻿using UnityEngine.SceneManagement;
 
-
 public static class SceneController
 {
     private static string _gameSceneIndex = "GameScene";

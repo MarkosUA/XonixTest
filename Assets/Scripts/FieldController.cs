@@ -9,8 +9,11 @@ public class FieldController
     private PlayerView _playerView;
     private Data _data;
 
-    private List<GroundEnemy> _groundEnemies;
+    public int NumberOfTheRepaintedElements { get; private set;}
+
     private List<WaterEnemy> _waterEnemies;
+    public List<GroundEnemy> GroundEnemies { get; private set; }
+
 
     public FieldController(Field field, PlayerView playerView, Data data)
     {
@@ -23,7 +26,7 @@ public class FieldController
 
     public void UpdateField()
     {
-        foreach (var groundEnemy in _groundEnemies)
+        foreach (var groundEnemy in GroundEnemies)
         {
             groundEnemy.Move(_field);
         }
@@ -36,7 +39,7 @@ public class FieldController
 
     public void AddEnemies(int numberOfGroundEnemies, int numberOfWaterEnemies)
     {
-        _groundEnemies = new List<GroundEnemy>();
+        GroundEnemies = new List<GroundEnemy>();
         _waterEnemies = new List<WaterEnemy>();
 
         for (int i = 0; i < numberOfGroundEnemies; i++)
@@ -54,7 +57,7 @@ public class FieldController
     {
         _field.Grid[position.X, position.Y] = Elements.GROUNDENEMY;
         var groundEnemy = new GroundEnemy(position, SelectDirection(), _playerController);
-        _groundEnemies.Add(groundEnemy);
+        GroundEnemies.Add(groundEnemy);
     }
 
     private void AddWaterEnemy(Position position)
@@ -110,16 +113,16 @@ public class FieldController
 
     public void DeletedEnemies(List<Position> positions)
     {
-        Debug.Log("In");
         for (int i = 0; i < positions.Count; i++)
         {
-            for (int j = 0; j < _groundEnemies.Count; j++)
+            NumberOfTheRepaintedElements++;
+
+            for (int j = 0; j < GroundEnemies.Count; j++)
             {
-                if (positions[i].X == _groundEnemies[j].Position.X && positions[i].Y == _groundEnemies[j].Position.Y)
+                if (positions[i].X == GroundEnemies[j].Position.X && positions[i].Y == GroundEnemies[j].Position.Y)
                 {
-                    Debug.Log("Must");
-                    _groundEnemies[j].Die(_field);
-                    _groundEnemies.Remove(_groundEnemies[j]);
+                    GroundEnemies[j].Die(_field);
+                    GroundEnemies.Remove(GroundEnemies[j]);
                 }
             }
         }

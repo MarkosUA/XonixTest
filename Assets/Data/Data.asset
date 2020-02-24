@@ -12,12 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d06ffaeaa2abb5645bf79774a45aaf29, type: 3}
   m_Name: Data
   m_EditorClassIdentifier: 
-  Hp: -224
+  Hp: 3
+  HpValue: 3
   Lvl: 1
-  CountOfTheGroundEnemies: 4
-  CountOfTheWaterEnemies: 2
+  CountOfTheGroundEnemies: 1
+  CountOfTheWaterEnemies: 1
   WidthOfTheWater: 2
-  WidthOfTheField: 43
-  HeightOfTheField: 76
-  TimerValue: 8
-  BestSize: 38.92
+  WidthOfTheField: 32
+  HeightOfTheField: 24
+  TimerValue: 0.15
+  BestLandscapeSize: 21.5
+  BestPotraitSize: 38
+  TimeToEndLevel: 60
