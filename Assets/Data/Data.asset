@@ -20,7 +20,6 @@ MonoBehaviour:
   WidthOfTheWater: 2
   WidthOfTheField: 32
   HeightOfTheField: 24
+  SizeCoef: 25
   TimerValue: 0.15
-  BestLandscapeSize: 21.5
-  BestPotraitSize: 38
   TimeToEndLevel: 60
