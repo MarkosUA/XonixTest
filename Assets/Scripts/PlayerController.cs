@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 public class PlayerController
 {
@@ -70,19 +71,14 @@ public class PlayerController
                     _realElement = Elements.WATER;
                     _trackPositions.Add(_position);
 
-                    var zone1 = new List<Position>();
-                    var zone2 = new List<Position>();
-                    var zone3 = new List<Position>();
-                    var zone4 = new List<Position>();
-
-                    CountingZones(field, new Position(_position.X + 1, _position.Y), zone1);
-                    CountingZones(field, new Position(_position.X - 1, _position.Y), zone2);
-                    CountingZones(field, new Position(_position.X, _position.Y + 1), zone3);
-                    CountingZones(field, new Position(_position.X, _position.Y - 1), zone4);
+                    var zone1 = CountingZones(field, new Position(_position.X + 1, _position.Y));
+                    var zone2 = CountingZones(field, new Position(_position.X - 1, _position.Y));
+                    var zone3 = CountingZones(field, new Position(_position.X, _position.Y - 1));
+                    var zone4 = CountingZones(field, new Position(_position.X, _position.Y + 1));
 
                     _position = nextPosition;
 
-                    var zone = ZoneSelection(zone1, zone2, zone3, zone4);
+                    var zone = ZoneSelection(new List<List<Position>> { zone1, zone2, zone3, zone4 });
                     PaintingZone(field, zone, _trackPositions);
                     _fieldController.DeletedEnemies(zone);
                     _trackPositions.Clear();
@@ -137,44 +133,84 @@ public class PlayerController
         }
     }
 
-    private void CountingZones(Field field, Position position, List<Position> list) //TODO: Fix alloc.
+    private List<Position> CountingZones(Field field, Position position)
     {
-        if (field.Grid[position.X, position.Y] != Elements.GROUND && field.Grid[position.X, position.Y] != Elements.GROUNDENEMY)
-            return;
-        if (list.Contains(position))
-            return;
+        if (field.Grid[position.X, position.Y] != Elements.GROUND &&
+            field.Grid[position.X, position.Y] != Elements.GROUNDENEMY) return null;
 
-        list.Add(position);
+        var result = new List<Position>();
+        result.Add(position);
 
-        CountingZones(field, new Position(position.X + 1, position.Y), list);
-        CountingZones(field, new Position(position.X - 1, position.Y), list);
-        CountingZones(field, new Position(position.X, position.Y + 1), list);
-        CountingZones(field, new Position(position.X, position.Y - 1), list);
-    }
+        var tempField = new bool[field.Width, field.Height];
+        tempField[position.X, position.Y] = true;
 
-    private List<Position> ZoneSelection(List<Position> zone1, List<Position> zone2, List<Position> zone3, List<Position> zone4)
-    {
-        if (zone1.Count > 0 && zone1.Count <= zone2.Count || zone1.Count > 0 && zone1.Count <= zone3.Count || zone1.Count > 0 && zone1.Count <= zone4.Count)
-            return zone1;
-        else
+        int addedPositionsCount;
+
+        do
         {
-            if (zone2.Count > 0 && zone2.Count <= zone1.Count || zone2.Count > 0 && zone2.Count <= zone3.Count || zone2.Count > 0 && zone2.Count <= zone4.Count)
-                return zone2;
-            else
+            addedPositionsCount = 0;
+
+            for (var x = 0; x < field.Width; x++)
             {
-                if (zone3.Count > 0 && zone3.Count <= zone1.Count || zone3.Count > 0 && zone3.Count <= zone2.Count || zone3.Count > 0 && zone3.Count <= zone4.Count)
-                    return zone3;
-                else
+                for (var y = 0; y < field.Height; y++)
                 {
-                    if (zone4.Count > 0 && zone4.Count <= zone1.Count || zone4.Count > 0 && zone4.Count <= zone2.Count || zone4.Count > 0 && zone4.Count <= zone3.Count)
-                        return zone4;
-                    else
+                    if (tempField[x, y]) continue;
+
+                    if (field.Grid[x, y] != Elements.GROUND &&
+                        field.Grid[x, y] != Elements.GROUNDENEMY) continue;
+
+                    if (x > 0)
                     {
-                        return null;
+                        if (tempField[x - 1, y])
+                        {
+                            tempField[x, y] = true;
+                            result.Add(new Position(x, y));
+                            addedPositionsCount++;
+                        }
+                    }
+
+                    if (x < field.Width - 1)
+                    {
+                        if (tempField[x + 1, y])
+                        {
+                            tempField[x, y] = true;
+                            result.Add(new Position(x, y));
+                            addedPositionsCount++;
+                        }
+                    }
+
+                    if (y > 0)
+                    {
+                        if (tempField[x, y - 1])
+                        {
+                            tempField[x, y] = true;
+                            result.Add(new Position(x, y));
+                            addedPositionsCount++;
+                        }
+                    }
+
+                    if (y < field.Height - 1)
+                    {
+                        if (tempField[x, y + 1])
+                        {
+                            tempField[x, y] = true;
+                            result.Add(new Position(x, y));
+                            addedPositionsCount++;
+                        }
                     }
                 }
             }
-        }
+        } while (addedPositionsCount > 0);
+
+        return result;
+    }
+
+    private List<Position> ZoneSelection(List<List<Position>> positionLists)
+    {
+        positionLists.RemoveAll(list => list == null);
+        var minLength = positionLists.Min(x => x.Count);
+
+        return positionLists.Find(x => x.Count == minLength);
     }
 
     private void PaintingZone(Field field, List<Position> zone, List<Position> track)
